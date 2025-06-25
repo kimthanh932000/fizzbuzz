@@ -12,6 +12,13 @@
                 .IsRequired()
                 .HasMaxLength(256);
 
+            builder.Property(e => e.Range)
+                .IsRequired()
+                .HasDefaultValue(100);
+
+            builder.Property(e => e.DurationInSeconds)
+                .IsRequired();
+
             builder
                 .HasMany(g => g.Rules)
                 .WithOne(r => r.Game)

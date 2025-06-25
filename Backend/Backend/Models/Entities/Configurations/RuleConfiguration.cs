@@ -1,5 +1,4 @@
-﻿
-namespace Backend.Models.Entities.Configurations
+﻿namespace Backend.Models.Entities.Configurations
 {
     public class RuleConfiguration : IEntityTypeConfiguration<Rule>
     {
