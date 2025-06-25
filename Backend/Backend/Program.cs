@@ -1,5 +1,4 @@
-
-using Backend.Data;
+using Backend.Repositories;
 
 namespace Backend
 {
@@ -14,7 +13,11 @@ namespace Backend
                     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")
                     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.")));
 
+            // Add repo to the container.
+            builder.Services.AddScoped<IGameRepo, GameRepo>();
+
             // Add services to the container.
+            builder.Services.AddScoped<IGameService, GameService>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
