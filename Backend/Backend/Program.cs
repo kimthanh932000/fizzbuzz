@@ -1,4 +1,6 @@
 
+using Backend.Data;
+
 namespace Backend
 {
     public class Program
@@ -6,6 +8,11 @@ namespace Backend
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            // Register dbcontext
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")
+                    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.")));
 
             // Add services to the container.
 
