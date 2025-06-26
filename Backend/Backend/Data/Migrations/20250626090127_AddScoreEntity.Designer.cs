@@ -3,6 +3,7 @@ using Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250626090127_AddScoreEntity")]
+    partial class AddScoreEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,34 +55,6 @@ namespace Backend.Data.Migrations
                     b.ToTable("Games");
                 });
 
-            modelBuilder.Entity("Backend.Models.Entities.GamePlay", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("GameId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RemainingSeconds")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TotalCorrect")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TotalIncorrect")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GameId")
-                        .IsUnique();
-
-                    b.ToTable("GamePlays");
-                });
-
             modelBuilder.Entity("Backend.Models.Entities.Rule", b =>
                 {
                     b.Property<int>("Id")
@@ -106,15 +81,29 @@ namespace Backend.Data.Migrations
                     b.ToTable("Rules");
                 });
 
-            modelBuilder.Entity("Backend.Models.Entities.GamePlay", b =>
+            modelBuilder.Entity("Backend.Models.Entities.Score", b =>
                 {
-                    b.HasOne("Backend.Models.Entities.Game", "Game")
-                        .WithOne()
-                        .HasForeignKey("Backend.Models.Entities.GamePlay", "GameId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Navigation("Game");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalCorrect")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalIncorrect")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId")
+                        .IsUnique();
+
+                    b.ToTable("Scores");
                 });
 
             modelBuilder.Entity("Backend.Models.Entities.Rule", b =>
@@ -122,6 +111,17 @@ namespace Backend.Data.Migrations
                     b.HasOne("Backend.Models.Entities.Game", "Game")
                         .WithMany("Rules")
                         .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Game");
+                });
+
+            modelBuilder.Entity("Backend.Models.Entities.Score", b =>
+                {
+                    b.HasOne("Backend.Models.Entities.Game", "Game")
+                        .WithOne()
+                        .HasForeignKey("Backend.Models.Entities.Score", "GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
