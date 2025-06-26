@@ -31,6 +31,12 @@
             return await _context.Games.FindAsync(id);
         }
 
+        public async Task<bool> IsGameNameExistedAsync(string name)
+        {
+            return await _context.Games
+                .AnyAsync(g => g.Name.ToLower() == name.ToLower());
+        }
+
         public async Task UpdateAsync(Game game)
         {
             _context.Games.Update(game);

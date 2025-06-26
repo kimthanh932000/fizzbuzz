@@ -7,6 +7,6 @@
         Task AddAsync(Game game);
         Task UpdateAsync(Game game);
         Task DeleteAsync(int id);
-        Task<bool> IsCorrectAnswer(int gameId, int number, string userInput);
+        Task<bool> IsCorrectAnswerAsync(int gameId, int number, string userInput);
     }
 }

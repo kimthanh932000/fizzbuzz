@@ -13,6 +13,11 @@
 
         public async Task AddAsync(Game game)
         {
+            var existedGameName = await _gameRepo.IsGameNameExistedAsync(game.Name);
+            if (existedGameName)
+            {
+                throw new InvalidOperationException("Game name already exists.");
+            }
             await _gameRepo.AddAsync(game);
         }
 
@@ -21,27 +26,43 @@
             var entity = await _gameRepo.GetByIdAsync(id);
             if (entity == null)
             {
-                await _gameRepo.DeleteAsync(entity);
+                throw new KeyNotFoundException("Game was not found.");
             }
+            await _gameRepo.DeleteAsync(entity);
         }
 
-        public async Task<IEnumerable<Game>> GetAllAsync()
+        public async Task<IEnumerable<Game?>> GetAllAsync()
         {
             return await _gameRepo.GetAllAsync();
         }
 
         public async Task<Game?> GetByIdAsync(int id)
         {
+            var entity = await _gameRepo.GetByIdAsync(id);
+            if (entity == null)
+            {
+                throw new KeyNotFoundException("Game was not found.");
+            }
             return await _gameRepo.GetByIdAsync(id);
         }
 
         public async Task UpdateAsync(Game game)
         {
+            var entity = await _gameRepo.GetByIdAsync(game.Id);
+            if (entity == null)
+            {
+                throw new KeyNotFoundException("Game was not found.");
+            }
             await _gameRepo.UpdateAsync(game);
         }
 
-        public async Task<bool> IsCorrectAnswer(int gameId, int number, string userInput)
+        public async Task<bool> IsCorrectAnswerAsync(int gameId, int number, string userInput)
         {
+            var entity = await _gameRepo.GetByIdAsync(gameId);
+            if (entity == null)
+            {
+                throw new KeyNotFoundException("Game was not found.");
+            }
             string correctAnswer = "";
 
             var gameRules = await _ruleService.GetByGameIdAsync(gameId);
