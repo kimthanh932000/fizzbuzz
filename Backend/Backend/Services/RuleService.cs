@@ -23,9 +23,9 @@
             }
         }
 
-        public async Task<IEnumerable<Rule>> GetAllAsync()
+        public async Task<IEnumerable<Rule>> GetByGameIdAsync(int gameId)
         {
-            return await _ruleRepo.GetAllAsync();
+            return await _ruleRepo.GetByGameIdAsync(gameId);
         }
 
         public async Task<Rule?> GetByIdAsync(int id)

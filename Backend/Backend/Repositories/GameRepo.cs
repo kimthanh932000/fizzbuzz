@@ -21,7 +21,7 @@
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Game>> GetAllAsync()
+        public async Task<IEnumerable<Game?>> GetAllAsync()
         {
             return await _context.Games.ToListAsync();
         }

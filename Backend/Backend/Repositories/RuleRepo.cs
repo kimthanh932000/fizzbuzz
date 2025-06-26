@@ -16,9 +16,11 @@
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Rule>> GetAllAsync()
+        public async Task<IEnumerable<Rule>> GetByGameIdAsync(int gameId)
         {
-            return await _context.Rules.ToListAsync();
+            return await _context.Rules
+                .Where(r => r.GameId == gameId)
+                .ToListAsync();
         }
 
         public async Task<Rule?> GetByIdAsync(int id)

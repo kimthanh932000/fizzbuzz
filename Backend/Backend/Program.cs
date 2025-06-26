@@ -15,9 +15,11 @@ namespace Backend
 
             // Add repo to the container.
             builder.Services.AddScoped<IGameRepo, GameRepo>();
+            builder.Services.AddScoped<IRuleRepo, RuleRepo>();
 
             // Add services to the container.
             builder.Services.AddScoped<IGameService, GameService>();
+            builder.Services.AddScoped<IRuleService, RuleService>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

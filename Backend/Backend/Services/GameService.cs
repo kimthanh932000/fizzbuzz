@@ -3,10 +3,12 @@
     public class GameService : IGameService
     {
         private readonly IGameRepo _gameRepo;
+        private readonly IRuleService _ruleService;
 
-        public GameService(IGameRepo gameRepo)
+        public GameService(IGameRepo gameRepo, IRuleService ruleService)
         {
             _gameRepo = gameRepo;
+            _ruleService = ruleService;
         }
 
         public async Task AddAsync(Game game)
@@ -36,6 +38,22 @@
         public async Task UpdateAsync(Game game)
         {
             await _gameRepo.UpdateAsync(game);
+        }
+
+        public async Task<bool> IsCorrectAnswer(int gameId, int number, string userInput)
+        {
+            string correctAnswer = "";
+
+            var gameRules = await _ruleService.GetByGameIdAsync(gameId);
+
+            foreach (var rule in gameRules)
+            {
+                if (number % rule.DivisibleBy == 0)
+                {
+                    correctAnswer += rule.Word;
+                }
+            }
+            return correctAnswer == userInput;
         }
     }
 }

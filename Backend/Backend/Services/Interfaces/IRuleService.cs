@@ -2,7 +2,7 @@
 {
     public interface IRuleService
     {
-        Task<IEnumerable<Rule>> GetAllAsync();
+        Task<IEnumerable<Rule>> GetByGameIdAsync(int gameId);
         Task<Rule?> GetByIdAsync(int id);
         Task AddAsync(Rule rule);
         Task UpdateAsync(Rule rule);
