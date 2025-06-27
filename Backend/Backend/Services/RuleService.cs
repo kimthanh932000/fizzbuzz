@@ -1,4 +1,5 @@
-﻿namespace Backend.Services
+﻿
+namespace Backend.Services
 {
     public class RuleService : IRuleService
     {
@@ -12,6 +13,11 @@
         public async Task AddAsync(Rule rule)
         {
             await _ruleRepo.AddAsync(rule);
+        }
+
+        public async Task AddRulesAsync(List<Rule> rules)
+        {
+            await _ruleRepo.AddRulesAsync(rules);
         }
 
         public async Task DeleteAsync(int id)

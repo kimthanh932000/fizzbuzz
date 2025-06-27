@@ -4,9 +4,20 @@
     {
         private readonly ApplicationDbContext _context;
 
+        public RuleRepo(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
         public async Task AddAsync(Rule rule)
         {
             await _context.Rules.AddAsync(rule);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task AddRulesAsync(IEnumerable<Rule> rules)
+        {
+            await _context.Rules.AddRangeAsync(rules);
             await _context.SaveChangesAsync();
         }
 

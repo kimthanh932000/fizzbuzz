@@ -1,4 +1,6 @@
-﻿namespace Backend.Services
+﻿using Backend.Helpers;
+
+namespace Backend.Services
 {
     public class GamePlayNumberService : IGamePlayNumberService
     {
@@ -11,11 +13,17 @@
             _gamePlayNumberRepo = gamePlayNumberRepo;
         }
 
-        public Task GenerateRandomNumber(int gamePlayId)
+        public async Task<int> GenerateRandomNumber(int gamePlayId)
         {
-            throw new NotImplementedException();
+            int range = 100;
+            int randNum = RandomHelper.Generate(1, range);
+            return randNum;
         }
 
-        //public Task<GamePlay> GetGamePlayById()
+        public async Task<bool> IsNumberAlreadyUsed(int inputNumber, int gamePlayId)
+        {
+            var usedNumbers = await _gamePlayNumberRepo.GetByGamePlayIdAsync(gamePlayId);
+            return usedNumbers.Any(n => n.Value == inputNumber);
+        }
     }
 }
