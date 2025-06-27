@@ -6,7 +6,7 @@
 
         public async Task AddAsync(Rule rule)
         {
-            await _context.AddAsync(rule);
+            await _context.Rules.AddAsync(rule);
             await _context.SaveChangesAsync();
         }
 

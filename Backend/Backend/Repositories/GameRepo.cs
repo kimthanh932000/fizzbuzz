@@ -11,7 +11,7 @@
 
         public async Task AddAsync(Game game)
         {
-            await _context.AddAsync(game);
+            await _context.Games.AddAsync(game);
             await _context.SaveChangesAsync();
         }
 

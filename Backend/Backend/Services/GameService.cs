@@ -3,12 +3,10 @@
     public class GameService : IGameService
     {
         private readonly IGameRepo _gameRepo;
-        private readonly IRuleService _ruleService;
 
-        public GameService(IGameRepo gameRepo, IRuleService ruleService)
+        public GameService(IGameRepo gameRepo)
         {
             _gameRepo = gameRepo;
-            _ruleService = ruleService;
         }
 
         public async Task AddAsync(Game game)
@@ -43,7 +41,7 @@
             {
                 throw new KeyNotFoundException("Game was not found.");
             }
-            return await _gameRepo.GetByIdAsync(id);
+            return entity;
         }
 
         public async Task UpdateAsync(Game game)
@@ -54,27 +52,6 @@
                 throw new KeyNotFoundException("Game was not found.");
             }
             await _gameRepo.UpdateAsync(game);
-        }
-
-        public async Task<bool> IsCorrectAnswerAsync(int gameId, int number, string userInput)
-        {
-            var entity = await _gameRepo.GetByIdAsync(gameId);
-            if (entity == null)
-            {
-                throw new KeyNotFoundException("Game was not found.");
-            }
-            string correctAnswer = "";
-
-            var gameRules = await _ruleService.GetByGameIdAsync(gameId);
-
-            foreach (var rule in gameRules)
-            {
-                if (number % rule.DivisibleBy == 0)
-                {
-                    correctAnswer += rule.Word;
-                }
-            }
-            return correctAnswer == userInput;
         }
     }
 }
