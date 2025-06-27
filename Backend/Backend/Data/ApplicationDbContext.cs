@@ -11,7 +11,6 @@
         public DbSet<GamePlay> GamePlays { get; set; }
         public DbSet<GamePlayNumber> GamePlayNumbers { get; set; }
 
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
