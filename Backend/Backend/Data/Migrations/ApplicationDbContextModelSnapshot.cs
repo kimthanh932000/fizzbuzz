@@ -80,6 +80,27 @@ namespace Backend.Data.Migrations
                     b.ToTable("GamePlays");
                 });
 
+            modelBuilder.Entity("Backend.Models.Entities.GamePlayNumber", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("GamePlayId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Value")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GamePlayId");
+
+                    b.ToTable("GamePlayNumbers");
+                });
+
             modelBuilder.Entity("Backend.Models.Entities.Rule", b =>
                 {
                     b.Property<int>("Id")
@@ -117,6 +138,17 @@ namespace Backend.Data.Migrations
                     b.Navigation("Game");
                 });
 
+            modelBuilder.Entity("Backend.Models.Entities.GamePlayNumber", b =>
+                {
+                    b.HasOne("Backend.Models.Entities.GamePlay", "GamePlay")
+                        .WithMany("PlayNumbers")
+                        .HasForeignKey("GamePlayId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GamePlay");
+                });
+
             modelBuilder.Entity("Backend.Models.Entities.Rule", b =>
                 {
                     b.HasOne("Backend.Models.Entities.Game", "Game")
@@ -131,6 +163,11 @@ namespace Backend.Data.Migrations
             modelBuilder.Entity("Backend.Models.Entities.Game", b =>
                 {
                     b.Navigation("Rules");
+                });
+
+            modelBuilder.Entity("Backend.Models.Entities.GamePlay", b =>
+                {
+                    b.Navigation("PlayNumbers");
                 });
 #pragma warning restore 612, 618
         }

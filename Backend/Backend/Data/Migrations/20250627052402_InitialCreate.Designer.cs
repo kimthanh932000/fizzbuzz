@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250625091950_UpdateEntity")]
-    partial class UpdateEntity
+    [Migration("20250627052402_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,6 +55,55 @@ namespace Backend.Data.Migrations
                     b.ToTable("Games");
                 });
 
+            modelBuilder.Entity("Backend.Models.Entities.GamePlay", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RemainingSeconds")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalCorrect")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalIncorrect")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId")
+                        .IsUnique();
+
+                    b.ToTable("GamePlays");
+                });
+
+            modelBuilder.Entity("Backend.Models.Entities.GamePlayNumber", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("GamePlayId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Value")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GamePlayId");
+
+                    b.ToTable("GamePlayNumbers");
+                });
+
             modelBuilder.Entity("Backend.Models.Entities.Rule", b =>
                 {
                     b.Property<int>("Id")
@@ -81,6 +130,28 @@ namespace Backend.Data.Migrations
                     b.ToTable("Rules");
                 });
 
+            modelBuilder.Entity("Backend.Models.Entities.GamePlay", b =>
+                {
+                    b.HasOne("Backend.Models.Entities.Game", "Game")
+                        .WithOne()
+                        .HasForeignKey("Backend.Models.Entities.GamePlay", "GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Game");
+                });
+
+            modelBuilder.Entity("Backend.Models.Entities.GamePlayNumber", b =>
+                {
+                    b.HasOne("Backend.Models.Entities.GamePlay", "GamePlay")
+                        .WithMany("PlayNumbers")
+                        .HasForeignKey("GamePlayId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GamePlay");
+                });
+
             modelBuilder.Entity("Backend.Models.Entities.Rule", b =>
                 {
                     b.HasOne("Backend.Models.Entities.Game", "Game")
@@ -95,6 +166,11 @@ namespace Backend.Data.Migrations
             modelBuilder.Entity("Backend.Models.Entities.Game", b =>
                 {
                     b.Navigation("Rules");
+                });
+
+            modelBuilder.Entity("Backend.Models.Entities.GamePlay", b =>
+                {
+                    b.Navigation("PlayNumbers");
                 });
 #pragma warning restore 612, 618
         }

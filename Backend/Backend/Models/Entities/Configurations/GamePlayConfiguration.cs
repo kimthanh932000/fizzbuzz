@@ -9,6 +9,10 @@
                 .HasForeignKey<GamePlay>(s => s.GameId)
                 .OnDelete(DeleteBehavior.Cascade); // Optional: cascade delete if Game is deleted
 
+            builder.HasMany(g => g.PlayNumbers)
+               .WithOne(n => n.GamePlay)
+               .HasForeignKey(n => n.GamePlayId);
+
             builder.Property(gp => gp.RemainingSeconds)
                .IsRequired();
 
