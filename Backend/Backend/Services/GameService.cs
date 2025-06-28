@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace Backend.Services
+﻿namespace Backend.Services
 {
     public class GameService : IGameService
     {
@@ -18,7 +16,7 @@ namespace Backend.Services
             var existedGameName = await _gameRepo.IsGameNameExistedAsync(gameDto.Name);
             if (existedGameName)
             {
-                throw new InvalidOperationException("Game name already exists.");
+                throw new FieldValidateException("Name", "Game name already exists.");
             }
 
             var game = new Game

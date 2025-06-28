@@ -65,7 +65,20 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ApiResponse<CreateGameDto>.FailedResponse(null, "An error has occurred"));
+                if (ex is FieldValidateException fieldEx)
+                {
+                    var errors = new Dictionary<string, string[]>
+                    {
+                        { fieldEx.FieldName, new[] { fieldEx.Message } }
+                    };
+                    return BadRequest(ApiResponse<object>.FailedResponse(errors));
+                }
+
+                var generalErrors = new Dictionary<string, string[]>
+                {
+                    { "General", new[] { ex.Message } }
+                };
+                return BadRequest(ApiResponse<object>.FailedResponse(generalErrors));
             }
         }
 
