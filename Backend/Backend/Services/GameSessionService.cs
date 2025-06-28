@@ -1,21 +1,21 @@
 ﻿namespace Backend.Services
 {
-    public class GamePlayService : IGamePlayService
+    public class GameSessionService : IGameSessionService
     {
         private readonly IGameService _gameService;
         private readonly IRuleService _ruleService;
-        private readonly IGamePlayRepo _gamePlayRepo;
+        private readonly IGameSessionRepo _gameSessionRepo;
 
-        public GamePlayService(IGameService gameService, IRuleService ruleService, IGamePlayRepo gamePlayRepo)
+        public GameSessionService(IGameService gameService, IRuleService ruleService, IGameSessionRepo gameSessionRepo)
         {
             _gameService = gameService;
             _ruleService = ruleService;
-            _gamePlayRepo = gamePlayRepo;
+            _gameSessionRepo = gameSessionRepo;
         }
 
-        public async Task<GamePlay?> GetByIdAsync(int id)
+        public async Task<GameSession?> GetByIdAsync(int id)
         {
-            var entity = await _gamePlayRepo.GetByIdAsync(id);
+            var entity = await _gameSessionRepo.GetByIdAsync(id);
             if (entity == null)
             {
                 throw new KeyNotFoundException("Game play was not found.");

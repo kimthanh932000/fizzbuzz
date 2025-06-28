@@ -1,8 +1,8 @@
 ﻿namespace Backend.Services.Interfaces
 {
-    public interface IGamePlayService
+    public interface IGameSessionService
     {
-        Task<GamePlay?> GetByIdAsync(int id);
+        Task<GameSession?> GetByIdAsync(int id);
         Task StartGameSessionAsync();
         Task<bool> IsCorrectAnswerAsync(int gameId, int number, string userInput);
     }

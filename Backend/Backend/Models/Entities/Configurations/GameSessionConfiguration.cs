@@ -1,17 +1,17 @@
 ﻿namespace Backend.Models.Entities.Configurations
 {
-    public class GamePlayConfiguration : IEntityTypeConfiguration<GamePlay>
+    public class GameSessionConfiguration : IEntityTypeConfiguration<GameSession>
     {
-        public void Configure(EntityTypeBuilder<GamePlay> builder)
+        public void Configure(EntityTypeBuilder<GameSession> builder)
         {
             builder.HasOne(s => s.Game)
                 .WithOne() 
-                .HasForeignKey<GamePlay>(s => s.GameId)
+                .HasForeignKey<GameSession>(s => s.GameId)
                 .OnDelete(DeleteBehavior.Cascade); // Optional: cascade delete if Game is deleted
 
             builder.HasMany(g => g.PlayNumbers)
-               .WithOne(n => n.GamePlay)
-               .HasForeignKey(n => n.GamePlayId);
+               .WithOne(n => n.GameSession)
+               .HasForeignKey(n => n.GameSessionId);
 
             builder.Property(gp => gp.RemainingSeconds)
                .IsRequired();
