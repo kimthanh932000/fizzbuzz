@@ -21,12 +21,12 @@
 
         public async Task<GameSession?> GetByIdAsync(int id)
         {
-            var entity = await _gameSessionRepo.GetByIdAsync(id);
-            if (entity == null)
+            var session = await _gameSessionRepo.GetByIdAsync(id);
+            if (session == null)
             {
-                throw new KeyNotFoundException("Game play was not found.");
+                throw new KeyNotFoundException("Session not found.");
             }
-            return entity;
+            return session;
         }
 
         public async Task ValidateAnswerAsync(int sessionId, int number, string answer)
@@ -78,8 +78,8 @@
                 TotalIncorrect = 0
             };
 
-            var result = await _gameSessionRepo.AddAsync(session);
-            return result;
+            var session = await _gameSessionRepo.AddAsync(session);
+            return session;
         }
     }
 }

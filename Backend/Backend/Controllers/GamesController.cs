@@ -112,7 +112,7 @@ namespace Backend.Controllers
 
         // DELETE: api/[controller]/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsync(int id)
+        public async Task<ActionResult> DeleteAsync(int id)
         {
             try
             {
@@ -127,7 +127,7 @@ namespace Backend.Controllers
 
         // POST: api/[controller]/start/{gameId}
         [HttpPost("start/{gameId}")]
-        public async Task<IActionResult> StartSession(int gameId)
+        public async Task<ActionResult> StartSession(int gameId)
         {
             try
             {
@@ -147,20 +147,41 @@ namespace Backend.Controllers
         }
 
         // POST: api/[controller]/validate/{sessionId}
-        [HttpPost("validate/{gameId}")]
-        public async Task<IActionResult> ValidateAnswerAsync(int sessionId, [FromBody] AnswerDto answer)
+        [HttpPost("validate-answer/{sessionId}")]
+        public async Task<ActionResult> ValidateAnswerAsync(int sessionId, [FromBody] AnswerDto answer)
         {
             try
             {
-                await _gameSessionService.StartSessionAsync(gameId);
-                return Ok(ApiResponse<object>.SuccessResponse(null, "Game session started."));
+                await _gameSessionService.ValidateAnswerAsync(sessionId, answer.Number, answer.Answer);
+                return Ok(ApiResponse<object>.SuccessResponse(null, "Answer submitted."));
             }
             catch (Exception ex)
             {
-                if (ex is KeyNotFoundException keyNotFoundEx)
+                if (ex is InvalidOperationException invalidEx)
                 {
                     return NotFound(ApiResponse<object>.FailedResponse(
-                                   new Dictionary<string, string[]> { { "GameId", new[] { keyNotFoundEx.Message } } }));
+                                   new Dictionary<string, string[]> { { "SessionId", new[] { invalidEx.Message } } }));
+                }
+                return BadRequest(ApiResponse<object>.FailedResponse(
+                                   new Dictionary<string, string[]> { { "Server", new[] { ex.Message } } }));
+            }
+        }
+
+        // GET: api/[controller]/session/{id}
+        [HttpGet("session/{id}")]
+        public async Task<ActionResult<GameSession>> GetSessionByIdAsync(int id)
+        {
+            try
+            {
+                var session = await _gameSessionService.GetByIdAsync(id);
+                return Ok(ApiResponse<GameSession>.SuccessResponse(session, "Session retrieved."));
+            }
+            catch (Exception ex)
+            {
+                if (ex is InvalidOperationException invalidEx)
+                {
+                    return NotFound(ApiResponse<object>.FailedResponse(
+                                   new Dictionary<string, string[]> { { "SessionId", new[] { invalidEx.Message } } }));
                 }
                 return BadRequest(ApiResponse<object>.FailedResponse(
                                    new Dictionary<string, string[]> { { "Server", new[] { ex.Message } } }));
