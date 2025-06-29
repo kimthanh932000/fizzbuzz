@@ -1,4 +1,6 @@
-﻿namespace Backend.Services
+﻿using Backend.Helpers;
+
+namespace Backend.Services
 {
     public class GameSessionService : IGameSessionService
     {
@@ -22,10 +24,19 @@
         public async Task<GameSession?> GetByIdAsync(int id)
         {
             var session = await _gameSessionRepo.GetByIdAsync(id);
-            if (session == null)
+            if (session == null || session.IsExpired)
             {
-                throw new KeyNotFoundException("Session not found.");
+                throw new InvalidOperationException("Session not found or already expired.");
             }
+
+            // Calculate remaining seconds
+            session.RemainingSeconds = TimeHelper.GetReminingTimeInSeconds(session.StartTime, session.Game.DurationInSeconds);
+
+            // Expire session if time is up
+            session.IsExpired = session.RemainingSeconds == 0;
+
+            await _gameSessionRepo.UpdateAsync(session);
+
             return session;
         }
 
