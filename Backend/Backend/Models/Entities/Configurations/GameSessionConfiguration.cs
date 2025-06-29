@@ -20,10 +20,12 @@
                .IsRequired();
 
             builder.Property(gp => gp.TotalCorrect)
-                .IsRequired();
+                .IsRequired()
+                .HasDefaultValue(0);
 
             builder.Property(gp => gp.TotalIncorrect)
-                .IsRequired();
+                .IsRequired()
+                .HasDefaultValue(0);
 
             builder.Property(gp => gp.IsExpired)
                 .IsRequired()

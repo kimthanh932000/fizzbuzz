@@ -9,10 +9,11 @@
             _context = context;
         }
 
-        public async Task AddAsync(Game game)
+        public async Task<Game> AddAsync(Game game)
         {
             await _context.Games.AddAsync(game);
             await _context.SaveChangesAsync();
+            return game;
         }
 
         public async Task DeleteAsync(Game game)

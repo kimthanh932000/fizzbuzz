@@ -9,10 +9,11 @@
             _context = context;
         }
 
-        public async Task AddAsync(GameSession gameSession)
+        public async Task<GameSession> AddAsync(GameSession gameSession)
         {
             await _context.GameSessions.AddAsync(gameSession);
             await _context.SaveChangesAsync();
+            return gameSession;
         }
 
         public async Task DeleteAsync(GameSession gameSession)

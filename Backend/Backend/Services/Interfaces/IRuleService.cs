@@ -4,7 +4,7 @@
     {
         Task<IEnumerable<Rule>> GetByGameIdAsync(int gameId);
         Task<Rule?> GetByIdAsync(int id);
-        Task AddAsync(Rule rule);
+        Task<Rule> AddAsync(Rule rule);
         Task UpdateAsync(Rule rule);
         Task DeleteAsync(int id);
         Task AddRulesAsync(List<Rule> rules);

@@ -2,7 +2,7 @@
 {
     public interface IGameSessionNumberService
     {
-        Task<int> GenerateRandomNumber(int gameSessionId);
-        Task<bool> IsNumberAlreadyUsed(int number, int gameSessionId);
+        int GenerateRandomNumber(int gameSessionId);
+        Task<bool> IsNumberUsed(int number, int gameSessionId);
     }
 }

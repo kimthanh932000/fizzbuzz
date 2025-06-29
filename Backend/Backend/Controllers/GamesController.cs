@@ -7,10 +7,12 @@ namespace Backend.Controllers
     public class GamesController : ControllerBase
     {
         private readonly IGameService _gameService;
+        private readonly IGameSessionService _gameSessionService;
 
-        public GamesController(IGameService gameService)
+        public GamesController(IGameService gameService, IGameSessionService gameSessionService)
         {
             _gameService = gameService;
+            _gameSessionService = gameSessionService;
         }
 
         // GET: api/[controller]
@@ -76,7 +78,7 @@ namespace Backend.Controllers
 
                 var generalErrors = new Dictionary<string, string[]>
                 {
-                    { "General", new[] { ex.Message } }
+                    { "Server", new[] { ex.Message } }
                 };
                 return BadRequest(ApiResponse<object>.FailedResponse(generalErrors));
             }
@@ -121,6 +123,48 @@ namespace Backend.Controllers
                 return BadRequest(ex);
             }
             return Ok();
+        }
+
+        // POST: api/[controller]/start/{gameId}
+        [HttpPost("start/{gameId}")]
+        public async Task<IActionResult> StartSession(int gameId)
+        {
+            try
+            {
+                await _gameSessionService.StartSessionAsync(gameId);
+                return Ok(ApiResponse<object>.SuccessResponse(null, "Game session started."));
+            }
+            catch (Exception ex)
+            {
+                if (ex is KeyNotFoundException keyNotFoundEx)
+                {
+                    return NotFound(ApiResponse<object>.FailedResponse(
+                                   new Dictionary<string, string[]> { { "GameId", new[] { keyNotFoundEx.Message } } }));
+                }
+                return BadRequest(ApiResponse<object>.FailedResponse(
+                                   new Dictionary<string, string[]> { { "Server", new[] { ex.Message } } }));
+            }
+        }
+
+        // POST: api/[controller]/validate/{sessionId}
+        [HttpPost("validate/{gameId}")]
+        public async Task<IActionResult> ValidateAnswerAsync(int sessionId, [FromBody] AnswerDto answer)
+        {
+            try
+            {
+                await _gameSessionService.StartSessionAsync(gameId);
+                return Ok(ApiResponse<object>.SuccessResponse(null, "Game session started."));
+            }
+            catch (Exception ex)
+            {
+                if (ex is KeyNotFoundException keyNotFoundEx)
+                {
+                    return NotFound(ApiResponse<object>.FailedResponse(
+                                   new Dictionary<string, string[]> { { "GameId", new[] { keyNotFoundEx.Message } } }));
+                }
+                return BadRequest(ApiResponse<object>.FailedResponse(
+                                   new Dictionary<string, string[]> { { "Server", new[] { ex.Message } } }));
+            }
         }
     }
 }

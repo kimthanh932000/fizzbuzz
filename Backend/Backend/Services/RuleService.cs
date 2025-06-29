@@ -10,9 +10,10 @@ namespace Backend.Services
             _ruleRepo = ruleRepo;
         }
 
-        public async Task AddAsync(Rule rule)
+        public async Task<Rule> AddAsync(Rule rule)
         {
-            await _ruleRepo.AddAsync(rule);
+            var result = await _ruleRepo.AddAsync(rule);
+            return result;
         }
 
         public async Task AddRulesAsync(List<Rule> rules)

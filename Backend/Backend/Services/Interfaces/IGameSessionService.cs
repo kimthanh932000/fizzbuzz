@@ -2,8 +2,8 @@
 {
     public interface IGameSessionService
     {
-        Task<GameSession?> GetByIdAsync(int id);
-        Task StartGameSessionAsync();
-        Task<bool> IsCorrectAnswerAsync(int gameId, int number, string userInput);
+        Task<GameSession?> GetByIdAsync(int sessionId);
+        Task<GameSession> StartSessionAsync(int gameId);
+        Task ValidateAnswerAsync(int sessionId, int number, string answer);
     }
 }

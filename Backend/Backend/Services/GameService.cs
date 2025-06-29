@@ -11,7 +11,7 @@
             _ruleService = ruleService;
         }
 
-        public async Task AddAsync(CreateGameDto gameDto)
+        public async Task<Game> AddAsync(CreateGameDto gameDto)
         {
             var existedGameName = await _gameRepo.IsGameNameExistedAsync(gameDto.Name);
             if (existedGameName)
@@ -29,7 +29,7 @@
             };
 
             // Save to get GameId
-            await _gameRepo.AddAsync(game);
+            var result = await _gameRepo.AddAsync(game);
 
             // Assign Rules with GameId
             game.Rules = gameDto.Rules.Select(r => new Rule
@@ -40,6 +40,8 @@
             }).ToList();
 
             await _ruleService.AddRulesAsync(game.Rules);
+
+            return result;
         }
 
         public async Task DeleteAsync(int id)

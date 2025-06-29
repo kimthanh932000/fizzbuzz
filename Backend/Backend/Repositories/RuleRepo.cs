@@ -9,10 +9,11 @@
             _context = context;
         }
 
-        public async Task AddAsync(Rule rule)
+        public async Task<Rule> AddAsync(Rule rule)
         {
             await _context.Rules.AddAsync(rule);
             await _context.SaveChangesAsync();
+            return rule;
         }
 
         public async Task AddRulesAsync(IEnumerable<Rule> rules)

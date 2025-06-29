@@ -9,10 +9,11 @@
             _context = context;
         }
 
-        public async Task AddAsync(GameSessionNumber number)
+        public async Task<GameSessionNumber> AddAsync(GameSessionNumber number)
         {
             await _context.GameSessionNumbers.AddAsync(number);
             await _context.SaveChangesAsync();
+            return number;
         }
 
         public async Task DeleteAsync(GameSessionNumber number)
