@@ -79,7 +79,7 @@ namespace Backend.Services
                 throw new KeyNotFoundException("Game was not found.");
             }
 
-            GameSession session = new GameSession()
+            var session = await _gameSessionRepo.AddAsync(new GameSession()
             {
                 GameId = gameId,
                 StartTime = DateTime.UtcNow,
@@ -87,10 +87,36 @@ namespace Backend.Services
                 IsExpired = false,
                 TotalCorrect = 0,
                 TotalIncorrect = 0
+            });
+
+            return session;
+        }
+
+        public async Task<int> GetRandomNumber(int sessionId, int range)
+        {
+            var usedNumbers = await _gameSessionNumberService.GetUsedNumbersBySessionIdAsync(sessionId);
+            if (usedNumbers.ToList().Count >= range)
+            {
+                throw new InvalidOperationException("All possible numbers have been used for this session.");
+            }
+
+            int randNumber;
+            do
+            {
+                randNumber = RandomHelper.Generate(1, range);
+            }
+            while (usedNumbers.Contains(randNumber));
+
+            // Save the new number to DB
+            var sessionNumber = new GameSessionNumber
+            {
+                GameSessionId = sessionId,
+                Value = randNumber
             };
 
-            var session = await _gameSessionRepo.AddAsync(session);
-            return session;
+            await _gameSessionNumberService.AddNewNumberAsync(sessionNumber);
+
+            return sessionNumber.Value;
         }
     }
 }

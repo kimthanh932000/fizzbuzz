@@ -1,28 +1,29 @@
-﻿using Backend.Helpers;
-
-namespace Backend.Services
+﻿namespace Backend.Services
 {
     public class GameSessionNumberService : IGameSessionNumberService
     {
-        //private readonly IGameSessionService _gameSessionService;
         private readonly IGameSessionNumberRepo _gameSessionNumberRepo;
 
         public GameSessionNumberService(IGameSessionNumberRepo gameSessionNumberRepo)
         {
-            //_gameSessionService = gameSessionService;
             _gameSessionNumberRepo = gameSessionNumberRepo;
         }
 
-        public int GenerateRandomNumber(int range)
+        public async Task AddNewNumberAsync(GameSessionNumber number)
         {
-            int randNum = RandomHelper.Generate(1, range);
-            return randNum;
+            await _gameSessionNumberRepo.AddAsync(number);
         }
 
-        public async Task<bool> IsNumberUsed(int number, int sessionId)
+        public async Task<IEnumerable<int>> GetUsedNumbersBySessionIdAsync(int sessionId)
         {
             var usedNumbers = await _gameSessionNumberRepo.GetByGameSessionIdAsync(sessionId);
-            return usedNumbers.Any(n => n.Value == number);
+            return usedNumbers.Select(n => n.Value);
         }
+
+        //public async Task<bool> IsNumberUsed(int number, int sessionId)
+        //{
+        //    var usedNumbers = await _gameSessionNumberRepo.GetByGameSessionIdAsync(sessionId);
+        //    return usedNumbers.Any(n => n.Value == number);
+        //}
     }
 }

@@ -2,7 +2,8 @@
 {
     public interface IGameSessionNumberService
     {
-        int GenerateRandomNumber(int gameSessionId);
-        Task<bool> IsNumberUsed(int number, int gameSessionId);
+        Task AddNewNumberAsync(GameSessionNumber number);
+        //Task<bool> IsNumberUsed(int number, int gameSessionId);
+        Task<IEnumerable<int>> GetUsedNumbersBySessionIdAsync(int sessionId);
     }
 }

@@ -146,8 +146,8 @@ namespace Backend.Controllers
             }
         }
 
-        // POST: api/[controller]/validate/{sessionId}
-        [HttpPost("validate-answer/{sessionId}")]
+        // POST: api/[controller]/session/validate-answer/{sessionId}
+        [HttpPost("session/validate-answer/{sessionId}")]
         public async Task<ActionResult> ValidateAnswerAsync(int sessionId, [FromBody] AnswerDto answer)
         {
             try
@@ -185,6 +185,33 @@ namespace Backend.Controllers
                 }
                 return BadRequest(ApiResponse<object>.FailedResponse(
                                    new Dictionary<string, string[]> { { "Server", new[] { ex.Message } } }));
+            }
+        }
+
+        // GET: api/[controller]/session/generate-number/{sessionId}
+        [HttpGet("session/generate-number/{sessionId}")]
+        public async Task<ActionResult> GenerateUniqueNumber(int sessionId, [FromBody] int range)
+        {
+            try
+            {
+                var number = await _gameSessionService.GetRandomNumber(sessionId, range);
+
+                return Ok(ApiResponse<int>.SuccessResponse(number, "Generated unique number."));
+            }
+            catch (Exception ex)
+            {
+                if (ex is InvalidOperationException invalidEx)
+                {
+                    return BadRequest(ApiResponse<object>.FailedResponse(new Dictionary<string, string[]>
+                    {
+                        { "Number", new[] { ex.Message } }
+                    }));
+                }
+                return StatusCode(500, ApiResponse<object>.FailedResponse(new Dictionary<string, string[]>
+                {
+                    { "Server", new[] { ex.Message } }
+                });
+
             }
         }
     }
