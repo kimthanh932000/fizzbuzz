@@ -179,8 +179,9 @@ namespace Backend.Controllers
         {
             try
             {
-                var session = await _gameSessionService.GetByIdAsync(id);
-                return Ok(ApiResponse<GameSession>.SuccessResponse(session, "Session retrieved."));
+                var result = await _gameSessionService.GetByIdAsync(id);
+                var sessionDto = result.ToRequestSessionDto();
+                return Ok(ApiResponse<RequestSessionDto>.SuccessResponse(sessionDto, "Session retrieved."));
             }
             catch (Exception ex)
             {
@@ -195,22 +196,36 @@ namespace Backend.Controllers
         }
 
         // GET: api/[controller]/session/generate-number/{sessionId}
-        [HttpGet("session/generate-number/{sessionId}")]
-        public async Task<ActionResult> GenerateUniqueNumber(int sessionId, [FromBody] int range)
+        [HttpPost("session/{sessionId}/generate-number")]
+        public async Task<ActionResult> GenerateUniqueNumber(int sessionId)
         {
             try
             {
-                var number = await _gameSessionService.GetRandomNumber(sessionId, range);
+                var number = await _gameSessionService.GetRandomNumber(sessionId);
 
-                return Ok(ApiResponse<int>.SuccessResponse(number, "Generated unique number."));
+                return Ok(ApiResponse<int>.SuccessResponse(number, "Number generated."));
             }
             catch (Exception ex)
-            {
+            {          
+                if (ex is KeyNotFoundException notFoundEx)
+                {
+                    return NotFound(ApiResponse<object>.FailedResponse(new Dictionary<string, string[]>
+                    {
+                        { "Session", new[] { notFoundEx.Message } }
+                    }));
+                }
+                if (ex is SessionExpiredException expiredEx)
+                {
+                    return StatusCode(410, ApiResponse<object>.FailedResponse(new Dictionary<string, string[]>
+                    {
+                        { "Session", new[] { expiredEx.Message } }
+                    }));
+                }
                 if (ex is InvalidOperationException invalidEx)
                 {
                     return BadRequest(ApiResponse<object>.FailedResponse(new Dictionary<string, string[]>
                     {
-                        { "Number", new[] { ex.Message } }
+                        { "Number", new[] { invalidEx.Message } }
                     }));
                 }
                 return StatusCode(500, ApiResponse<object>.FailedResponse(new Dictionary<string, string[]>

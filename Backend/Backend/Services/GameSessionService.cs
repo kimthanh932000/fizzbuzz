@@ -21,19 +21,23 @@ namespace Backend.Services
             _gameSessionNumberService = gameSessionNumberService;
         }
 
+        public bool IsExpired(DateTime startTime, int remainingTimeInSeconds)
+        {
+            // Calculate remaining seconds
+            remainingTimeInSeconds = TimeHelper.GetReminingTimeInSeconds(startTime, remainingTimeInSeconds);
+            return remainingTimeInSeconds == 0;
+        }
+
         public async Task<GameSession?> GetByIdAsync(int id)
         {
             var session = await _gameSessionRepo.GetByIdAsync(id);
-            if (session == null || session.IsExpired)
+            if (session == null)
             {
-                throw new InvalidOperationException("Session not found or already expired.");
-            }
-
-            // Calculate remaining seconds
-            session.RemainingSeconds = TimeHelper.GetReminingTimeInSeconds(session.StartTime, session.Game.DurationInSeconds);
+                throw new KeyNotFoundException("Session not found.");
+            }          
 
             // Expire session if time is up
-            session.IsExpired = session.RemainingSeconds == 0;
+            session.IsExpired = IsExpired(session.StartTime, session.Game.DurationInSeconds);
 
             await _gameSessionRepo.UpdateAsync(session);
 
@@ -45,29 +49,37 @@ namespace Backend.Services
             var session = await _gameSessionRepo.GetByIdAsync(sessionId);
 
             if (session == null || session.IsExpired)
-                throw new InvalidOperationException("Session not found or already expired.");
-
-            string correctAnswer = "";
-
-            var gameRules = await _ruleService.GetByGameIdAsync(session.Game.Id);
-
-            foreach (var rule in gameRules)
             {
-                if (number % rule.DivisibleBy == 0)
-                {
-                    correctAnswer += rule.Word;
-                }
+                throw new KeyNotFoundException("Session not found.");
             }
             
-            if (correctAnswer == answer)
+            // Expire session if time is up
+            session.IsExpired = IsExpired(session.StartTime, session.Game.DurationInSeconds);
+
+            if (!session.IsExpired)
             {
-                session.TotalCorrect += 1;
-            } 
-            else
-            {
-                session.TotalIncorrect += 1;
-            }
-            await _gameSessionRepo.UpdateAsync(session);
+                string correctAnswer = "";
+
+                var gameRules = await _ruleService.GetByGameIdAsync(session.Game.Id);
+
+                foreach (var rule in gameRules)
+                {
+                    if (number % rule.DivisibleBy == 0)
+                    {
+                        correctAnswer += rule.Word;
+                    }
+                }
+
+                if (correctAnswer == answer)
+                {
+                    session.TotalCorrect += 1;
+                }
+                else
+                {
+                    session.TotalIncorrect += 1;
+                }
+                await _gameSessionRepo.UpdateAsync(session);
+            }            
         }
 
         public async Task<GameSession> StartSessionAsync(int gameId)
@@ -92,10 +104,23 @@ namespace Backend.Services
             return session;
         }
 
-        public async Task<int> GetRandomNumber(int sessionId, int range)
+        public async Task<int> GetRandomNumber(int sessionId)
         {
+            var session = await _gameSessionRepo.GetByIdAsync(sessionId);
+            if (session == null)
+            {
+                throw new KeyNotFoundException("Session not found.");
+            }
+
+            // Expire session if time is up
+            session.IsExpired = IsExpired(session.StartTime, session.Game.DurationInSeconds);
+            if (session.IsExpired)
+            {
+                throw new SessionExpiredException();
+            }
+
             var usedNumbers = await _gameSessionNumberService.GetUsedNumbersBySessionIdAsync(sessionId);
-            if (usedNumbers.ToList().Count >= range)
+            if (usedNumbers.ToList().Count >= session.Game.Range)
             {
                 throw new InvalidOperationException("All possible numbers have been used for this session.");
             }
@@ -103,7 +128,7 @@ namespace Backend.Services
             int randNumber;
             do
             {
-                randNumber = RandomHelper.Generate(1, range);
+                randNumber = RandomHelper.Generate(1, session.Game.Range);
             }
             while (usedNumbers.Contains(randNumber));
 

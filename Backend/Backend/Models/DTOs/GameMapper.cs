@@ -41,7 +41,8 @@
             {
                 Id = session.Id,
                 GameId = session.GameId,
-                RemainingSeconds = session.RemainingSeconds
+                RemainingSeconds = session.RemainingSeconds,
+                IsExpired = session.IsExpired
             };
         }
     }
