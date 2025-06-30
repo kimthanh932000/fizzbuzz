@@ -17,16 +17,21 @@ namespace Backend.Controllers
 
         // GET: api/[controller]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Game>>> GetAllAsync()
+        public async Task<ActionResult> GetAllAsync()
         {
             try
             {
-                var entities = await _gameService.GetAllAsync();
-                return Ok(entities);
+                var result = await _gameService.GetAllAsync();
+                var gamesDto = result.Select(r => r.ToRequestGameDto()).ToList();
+                return Ok(ApiResponse<IEnumerable<RequestGameDto>>.SuccessResponse(gamesDto, "All games retrieved."));
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                var generalErrors = new Dictionary<string, string[]>
+                {
+                    { "Server", new[] { ex.Message } }
+                };
+                return BadRequest(ApiResponse<object>.FailedResponse(generalErrors));
             }
         }
 
@@ -210,7 +215,7 @@ namespace Backend.Controllers
                 return StatusCode(500, ApiResponse<object>.FailedResponse(new Dictionary<string, string[]>
                 {
                     { "Server", new[] { ex.Message } }
-                });
+                }));
 
             }
         }
