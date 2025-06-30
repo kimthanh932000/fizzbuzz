@@ -136,8 +136,9 @@ namespace Backend.Controllers
         {
             try
             {
-                await _gameSessionService.StartSessionAsync(gameId);
-                return Ok(ApiResponse<object>.SuccessResponse(null, "Game session started."));
+                var result = await _gameSessionService.StartSessionAsync(gameId);
+                var sessionDto = result.ToRequestSessionDto();
+                return Ok(ApiResponse<RequestSessionDto>.SuccessResponse(sessionDto, "Session started."));
             }
             catch (Exception ex)
             {

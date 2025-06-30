@@ -13,5 +13,6 @@
         public int DurationInSeconds { get; set; }   // Game duration
 
         public List<Rule> Rules { get; set; }   // List of game rules
+        public List<GameSession> GameSessions { get; set; } // List of game sessions
     }
 }

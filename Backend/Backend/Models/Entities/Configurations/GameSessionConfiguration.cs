@@ -5,8 +5,8 @@
         public void Configure(EntityTypeBuilder<GameSession> builder)
         {
             builder.HasOne(s => s.Game)
-                .WithOne()
-                .HasForeignKey<GameSession>(s => s.GameId)
+                .WithMany(g => g.GameSessions)
+                .HasForeignKey(s => s.GameId)
                 .OnDelete(DeleteBehavior.Cascade); // Optional: cascade delete if Game is deleted
 
             builder.HasMany(g => g.PlayNumbers)

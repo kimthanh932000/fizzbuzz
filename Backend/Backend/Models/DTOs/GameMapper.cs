@@ -34,5 +34,15 @@
                 DurationInSeconds = game.DurationInSeconds,
             };
         }
+
+        public static RequestSessionDto ToRequestSessionDto(this GameSession session)
+        {
+            return new RequestSessionDto()
+            {
+                Id = session.Id,
+                GameId = session.GameId,
+                RemainingSeconds = session.RemainingSeconds
+            };
+        }
     }
 }
