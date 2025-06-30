@@ -76,10 +76,14 @@ namespace Backend.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("TotalCorrect")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<int>("TotalIncorrect")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.HasKey("Id");
 
