@@ -7,6 +7,6 @@
         public int Number { get; set; }
 
         [Required]
-        public string Answer { get; set; }
+        public string Value { get; set; }
     }
 }

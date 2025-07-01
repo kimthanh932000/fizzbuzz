@@ -1,6 +1,4 @@
-﻿using Backend.Wrappers;
-
-namespace Backend.Controllers
+﻿namespace Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -152,27 +150,6 @@ namespace Backend.Controllers
             }
         }
 
-        // POST: api/[controller]/session/validate-answer/{sessionId}
-        [HttpPost("session/validate-answer/{sessionId}")]
-        public async Task<ActionResult> ValidateAnswerAsync(int sessionId, [FromBody] AnswerDto answer)
-        {
-            try
-            {
-                await _gameSessionService.ValidateAnswerAsync(sessionId, answer.Number, answer.Answer);
-                return Ok(ApiResponse<object>.SuccessResponse(null, "Answer submitted."));
-            }
-            catch (Exception ex)
-            {
-                if (ex is InvalidOperationException invalidEx)
-                {
-                    return NotFound(ApiResponse<object>.FailedResponse(
-                                   new Dictionary<string, string[]> { { "SessionId", new[] { invalidEx.Message } } }));
-                }
-                return BadRequest(ApiResponse<object>.FailedResponse(
-                                   new Dictionary<string, string[]> { { "Server", new[] { ex.Message } } }));
-            }
-        }
-
         // GET: api/[controller]/session/{id}
         [HttpGet("session/{id}")]
         public async Task<ActionResult<GameSession>> GetSessionByIdAsync(int id)
@@ -195,18 +172,33 @@ namespace Backend.Controllers
             }
         }
 
-        // GET: api/[controller]/session/generate-number/{sessionId}
-        [HttpPost("session/{sessionId}/generate-number")]
-        public async Task<ActionResult> GenerateUniqueNumber(int sessionId)
+        // POST: api/[controller]/session/{sessionId}/next-round
+        [HttpPost("session/{sessionId}/next-round")]
+        public async Task<ActionResult> NextRoundAsync(int sessionId, [FromBody] AnswerDto answer)
         {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                        .Where(ms => ms.Value.Errors.Count > 0)
+                        .ToDictionary(
+                            kvp => kvp.Key,
+                            kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                        );
+
+                return BadRequest(ApiResponse<object>.FailedResponse(errors));
+            }
             try
             {
-                var number = await _gameSessionService.GetRandomNumber(sessionId);
+                // Validate answer
+                await _gameSessionService.ValidateAnswerAsync(sessionId, answer.Number, answer.Value);
 
-                return Ok(ApiResponse<int>.SuccessResponse(number, "Number generated."));
+                // Get new number
+                var newNumber = await _gameSessionService.GetRandomNumber(sessionId);
+
+                return Ok(ApiResponse<int>.SuccessResponse(newNumber, "Next round."));
             }
             catch (Exception ex)
-            {          
+            {
                 if (ex is KeyNotFoundException notFoundEx)
                 {
                     return NotFound(ApiResponse<object>.FailedResponse(new Dictionary<string, string[]>
@@ -223,7 +215,7 @@ namespace Backend.Controllers
                 }
                 if (ex is InvalidOperationException invalidEx)
                 {
-                    return BadRequest(ApiResponse<object>.FailedResponse(new Dictionary<string, string[]>
+                    return Conflict(ApiResponse<object>.FailedResponse(new Dictionary<string, string[]>
                     {
                         { "Number", new[] { invalidEx.Message } }
                     }));
@@ -232,8 +224,8 @@ namespace Backend.Controllers
                 {
                     { "Server", new[] { ex.Message } }
                 }));
-
             }
         }
+
     }
 }

@@ -21,7 +21,7 @@ namespace Backend.Services
             _gameSessionNumberService = gameSessionNumberService;
         }
 
-        public bool IsExpired(DateTime startTime, int remainingTimeInSeconds)
+        public bool IsSessionExpired(DateTime startTime, int remainingTimeInSeconds)
         {
             // Calculate remaining seconds
             remainingTimeInSeconds = TimeHelper.GetReminingTimeInSeconds(startTime, remainingTimeInSeconds);
@@ -37,7 +37,7 @@ namespace Backend.Services
             }          
 
             // Expire session if time is up
-            session.IsExpired = IsExpired(session.StartTime, session.Game.DurationInSeconds);
+            session.IsExpired = IsSessionExpired(session.StartTime, session.Game.DurationInSeconds);
 
             await _gameSessionRepo.UpdateAsync(session);
 
@@ -48,38 +48,48 @@ namespace Backend.Services
         {
             var session = await _gameSessionRepo.GetByIdAsync(sessionId);
 
-            if (session == null || session.IsExpired)
+            if (session == null)
             {
                 throw new KeyNotFoundException("Session not found.");
             }
-            
+
             // Expire session if time is up
-            session.IsExpired = IsExpired(session.StartTime, session.Game.DurationInSeconds);
+            session.IsExpired = IsSessionExpired(session.StartTime, session.Game.DurationInSeconds);
 
-            if (!session.IsExpired)
+            if (session.IsExpired)
             {
-                string correctAnswer = "";
+                throw new SessionExpiredException();
+            }
 
-                var gameRules = await _ruleService.GetByGameIdAsync(session.Game.Id);
+            string correctAnswer = "";
 
-                foreach (var rule in gameRules)
-                {
-                    if (number % rule.DivisibleBy == 0)
-                    {
-                        correctAnswer += rule.Word;
-                    }
-                }
+            var gameRules = await _ruleService.GetByGameIdAsync(session.Game.Id);
 
-                if (correctAnswer == answer)
+            // Get word substitution based on the game's rules
+            foreach (var rule in gameRules)
+            {
+                if (number % rule.DivisibleBy == 0)
                 {
-                    session.TotalCorrect += 1;
+                    correctAnswer += rule.Word;
                 }
-                else
-                {
-                    session.TotalIncorrect += 1;
-                }
-                await _gameSessionRepo.UpdateAsync(session);
-            }            
+            }
+
+            // Randomly generated number is not divisible by any of the numbers specified in the game's rules
+            if (String.IsNullOrEmpty(correctAnswer))
+            {
+                correctAnswer = answer;
+            }
+
+            // Compare correct answer with input answer
+            if (correctAnswer == answer)
+            {
+                session.TotalCorrect += 1;
+            }
+            else
+            {
+                session.TotalIncorrect += 1;
+            }
+            await _gameSessionRepo.UpdateAsync(session);
         }
 
         public async Task<GameSession> StartSessionAsync(int gameId)
@@ -113,7 +123,7 @@ namespace Backend.Services
             }
 
             // Expire session if time is up
-            session.IsExpired = IsExpired(session.StartTime, session.Game.DurationInSeconds);
+            session.IsExpired = IsSessionExpired(session.StartTime, session.Game.DurationInSeconds);
             if (session.IsExpired)
             {
                 throw new SessionExpiredException();
