@@ -143,5 +143,18 @@ namespace Backend.Services
 
             return sessionNumber.Value;
         }
+
+        public async Task<GameScoreDto> GetScoreBySessionIdAsync(int sessionId)
+        {
+            var session = await GetSessionOrThrowAsync(sessionId);
+
+            GameScoreDto result = new GameScoreDto();
+
+            if (!session.IsExpired)
+            {
+                throw new SessionNotExpiredException();
+            }
+            return session.ToGameScoreDto();
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Backend.Models.DTOs
+﻿namespace Backend.Models.DTOs.Mapper
 {
     public static class GameMapper
     {
@@ -54,6 +54,16 @@
                 GameId = session.GameId,
                 RemainingSeconds = session.RemainingSeconds,
                 IsExpired = session.IsExpired
+            };
+        }
+
+        public static GameScoreDto ToGameScoreDto(this GameSession session)
+        {
+            return new GameScoreDto()
+            {
+                SessionId = session.Id,
+                TotalCorrect = session.TotalCorrect,
+                TotalIncorrect = session.TotalIncorrect
             };
         }
     }

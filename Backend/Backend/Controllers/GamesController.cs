@@ -229,5 +229,25 @@
             }
         }
 
+        // GET: api/[controller]/session/{sessionId}/score
+        [HttpGet("session/{sessionId}/score")]
+        public async Task<ActionResult> GetScoreBySessionIdAsync(int sessionId)
+        {
+            try
+            {
+                var entity = await _gameSessionService.GetScoreBySessionIdAsync(sessionId);
+                return Ok(ApiResponse<GameScoreDto>.SuccessResponse(entity, "Score retrieved."));
+            }
+            catch (Exception ex)
+            {
+                if (ex is KeyNotFoundException keyNotFoundEx)
+                {
+                    return NotFound(ApiResponse<object>.FailedResponse(
+                                   new Dictionary<string, string[]> { { "SessionId", new[] { keyNotFoundEx.Message } } }));
+                }
+                return BadRequest(ApiResponse<object>.FailedResponse(
+                                   new Dictionary<string, string[]> { { "Server", new[] { ex.Message } } }));
+            }
+        }
     }
 }

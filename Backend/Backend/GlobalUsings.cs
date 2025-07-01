@@ -8,6 +8,7 @@ global using Backend.Models.Entities.Base;
 global using Backend.Models.Entities;
 global using Backend.Models.Entities.Configurations;
 global using Backend.Models.DTOs;
+global using Backend.Models.DTOs.Mapper;
 global using Backend.Services;
 global using Backend.Services.Interfaces;
 global using Backend.Data;
