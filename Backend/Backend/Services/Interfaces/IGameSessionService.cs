@@ -2,8 +2,8 @@
 {
     public interface IGameSessionService
     {
-        Task<GameSession?> GetByIdAsync(int sessionId);
-        Task<GameSession> StartSessionAsync(int gameId);
+        Task<RequestSessionDto> GetByIdAsync(int sessionId);
+        Task<RequestSessionDto> StartSessionAsync(int gameId);
         Task ValidateAnswerAsync(int sessionId, int number, string answer);
         Task<int> GetRandomNumber(int sessionId);
         Task<GameScoreDto> GetScoreBySessionIdAsync(int sessionId);

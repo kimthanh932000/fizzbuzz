@@ -137,8 +137,7 @@
             try
             {
                 var result = await _gameSessionService.StartSessionAsync(gameId);
-                var sessionDto = result.ToRequestSessionDto();
-                return Ok(ApiResponse<RequestSessionDto>.SuccessResponse(sessionDto, "Session started."));
+                return Ok(ApiResponse<RequestSessionDto>.SuccessResponse(result, "Session started."));
             }
             catch (Exception ex)
             {
@@ -154,13 +153,12 @@
 
         // GET: api/[controller]/session/{id}
         [HttpGet("session/{id}")]
-        public async Task<ActionResult<GameSession>> GetSessionByIdAsync(int id)
+        public async Task<ActionResult> GetSessionByIdAsync(int id)
         {
             try
             {
                 var result = await _gameSessionService.GetByIdAsync(id);
-                var sessionDto = result.ToRequestSessionDto();
-                return Ok(ApiResponse<RequestSessionDto>.SuccessResponse(sessionDto, "Session retrieved."));
+                return Ok(ApiResponse<RequestSessionDto>.SuccessResponse(result, "Session retrieved."));
             }
             catch (Exception ex)
             {

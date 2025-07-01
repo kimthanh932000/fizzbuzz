@@ -46,14 +46,15 @@
             };
         }
 
-        public static RequestSessionDto ToRequestSessionDto(this GameSession session)
+        public static RequestSessionDto ToRequestSessionDto(this GameSession session, int currentNumber)
         {
             return new RequestSessionDto()
             {
                 Id = session.Id,
                 GameId = session.GameId,
                 RemainingSeconds = session.RemainingSeconds,
-                IsExpired = session.IsExpired
+                IsExpired = session.IsExpired,
+                CurrentNumber = currentNumber
             };
         }
 

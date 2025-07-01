@@ -6,5 +6,6 @@
         public int GameId { get; set; }
         public int RemainingSeconds { get; set; }
         public bool IsExpired { get; set; }
+        public int CurrentNumber { get; set; }
     }
 }

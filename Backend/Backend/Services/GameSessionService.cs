@@ -1,4 +1,6 @@
 ﻿using Backend.Helpers;
+using Backend.Models.DTOs.Mapper;
+using Backend.Models.Entities;
 
 namespace Backend.Services
 {
@@ -47,11 +49,15 @@ namespace Backend.Services
                    ?? throw new KeyNotFoundException("Session not found.");
         }
 
-        public async Task<GameSession?> GetByIdAsync(int id)
+        public async Task<RequestSessionDto> GetByIdAsync(int id)
         {
             var session = await GetSessionOrThrowAsync(id);
             await ExpireSessionIfNecessaryAsync(session, throwIfExpired: true);
-            return session;
+
+            // Generate a unique random number
+            int number = await GetRandomNumber(session.Id);
+
+            return session.ToRequestSessionDto(number);
         }
 
         public async Task ValidateAnswerAsync(int sessionId, int number, string answer)
@@ -91,7 +97,7 @@ namespace Backend.Services
             await _gameSessionRepo.UpdateAsync(session);
         }
 
-        public async Task<GameSession> StartSessionAsync(int gameId)
+        public async Task<RequestSessionDto> StartSessionAsync(int gameId)
         {
             var game = await _gameService.GetByIdAsync(gameId);
 
@@ -110,7 +116,10 @@ namespace Backend.Services
                 TotalIncorrect = 0
             });
 
-            return session;
+            // Generate first unique random number
+            int firstNumber = await GetRandomNumber(session.Id);
+
+            return session.ToRequestSessionDto(firstNumber);
         }
 
         public async Task<int> GetRandomNumber(int sessionId)
