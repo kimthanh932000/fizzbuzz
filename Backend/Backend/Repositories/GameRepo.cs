@@ -29,7 +29,7 @@
 
         public async Task<Game?> GetByIdAsync(int id)
         {
-            return await _context.Games.FindAsync(id);
+            return await _context.Games.Include(g => g.Rules).FirstOrDefaultAsync(g => g.Id == id);
         }
 
         public async Task<bool> IsGameNameExistedAsync(string name)

@@ -40,11 +40,17 @@
             try
             {
                 var entity = await _gameService.GetByIdAsync(id);
-                return entity == null ? NoContent() : entity;
+                return Ok(ApiResponse<RequestGameDto>.SuccessResponse(entity.ToRequestGameDto(), "Game retrieved."));
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                if (ex is KeyNotFoundException keyNotFoundEx)
+                {
+                    return NotFound(ApiResponse<object>.FailedResponse(
+                                   new Dictionary<string, string[]> { { "GameId", new[] { keyNotFoundEx.Message } } }));
+                }
+                return BadRequest(ApiResponse<object>.FailedResponse(
+                                   new Dictionary<string, string[]> { { "Server", new[] { ex.Message } } }));
             }
         }
 
@@ -78,12 +84,8 @@
                     };
                     return BadRequest(ApiResponse<object>.FailedResponse(errors));
                 }
-
-                var generalErrors = new Dictionary<string, string[]>
-                {
-                    { "Server", new[] { ex.Message } }
-                };
-                return BadRequest(ApiResponse<object>.FailedResponse(generalErrors));
+                return StatusCode(500, ApiResponse<object>.FailedResponse(
+                                   new Dictionary<string, string[]> { { "Server", new[] { ex.Message } } }));
             }
         }
 
