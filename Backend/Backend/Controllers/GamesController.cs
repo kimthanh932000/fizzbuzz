@@ -65,8 +65,8 @@
             }
             try
             {
-                await _gameService.AddAsync(gameDto);
-                return Ok(ApiResponse<object>.SuccessResponse(null, "New game created."));
+                var result = await _gameService.AddAsync(gameDto);
+                return Ok(ApiResponse<RequestGameDto>.SuccessResponse(result, "New game created."));
             }
             catch (Exception ex)
             {

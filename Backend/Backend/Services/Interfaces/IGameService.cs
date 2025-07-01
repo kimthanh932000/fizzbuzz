@@ -4,7 +4,7 @@
     {
         Task<IEnumerable<Game>> GetAllAsync();
         Task<Game?> GetByIdAsync(int id);
-        Task<Game> AddAsync(CreateGameDto game);
+        Task<RequestGameDto> AddAsync(CreateGameDto game);
         Task UpdateAsync(Game game);
         Task DeleteAsync(int id);
     }

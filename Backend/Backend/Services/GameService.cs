@@ -11,9 +11,9 @@
             _ruleService = ruleService;
         }
 
-        public async Task<Game> AddAsync(CreateGameDto gameDto)
+        public async Task<RequestGameDto> AddAsync(CreateGameDto createGameDto)
         {
-            var existedGameName = await _gameRepo.IsGameNameExistedAsync(gameDto.Name);
+            var existedGameName = await _gameRepo.IsGameNameExistedAsync(createGameDto.Name);
             if (existedGameName)
             {
                 throw new FieldValidateException("Name", "Game name already exists.");
@@ -21,10 +21,10 @@
 
             var game = new Game
             {
-                Name = gameDto.Name,
-                AuthorName = gameDto.AuthorName,
-                Range = gameDto.Range,
-                DurationInSeconds = gameDto.DurationInSeconds,
+                Name = createGameDto.Name,
+                AuthorName = createGameDto.AuthorName,
+                Range = createGameDto.Range,
+                DurationInSeconds = createGameDto.DurationInSeconds,
                 Rules = new List<Rule>() // Initially empty
             };
 
@@ -32,16 +32,34 @@
             var result = await _gameRepo.AddAsync(game);
 
             // Assign Rules with GameId
-            game.Rules = gameDto.Rules.Select(r => new Rule
+            game.Rules = createGameDto.Rules.Select(r => new Rule
             {
                 DivisibleBy = r.DivisibleBy,
                 Word = r.Word,
                 GameId = game.Id
             }).ToList();
 
-            await _ruleService.AddRulesAsync(game.Rules);
+            var rulesEntity = await _ruleService.AddRulesAsync(game.Rules);
 
-            return result;
+            // Populate Rules into result before returning
+            result.Rules = rulesEntity.ToList();
+
+            var gameDto = new RequestGameDto
+            {
+                Id = result.Id,
+                Name = result.Name,
+                AuthorName = result.AuthorName, 
+                Range = result.Range,
+                DurationInSeconds = result.DurationInSeconds,
+                Rules = result.Rules.Select(r => new RequestRuleDto
+                {
+                    Id = r.Id,
+                    DivisibleBy = r.DivisibleBy,
+                    Word = r.Word
+                }).ToList()
+            };
+
+            return gameDto;
         }
 
         public async Task DeleteAsync(int id)

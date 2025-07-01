@@ -3,6 +3,6 @@
     public interface IRuleRepo : IRepoBase<Rule>
     {
         Task<IEnumerable<Rule>> GetByGameIdAsync(int gameId);
-        Task AddRulesAsync(IEnumerable<Rule> rules);
+        Task<IEnumerable<Rule>> AddRulesAsync(IEnumerable<Rule> rules);
     }
 }

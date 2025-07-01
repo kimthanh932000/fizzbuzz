@@ -16,10 +16,11 @@
             return rule;
         }
 
-        public async Task AddRulesAsync(IEnumerable<Rule> rules)
+        public async Task<IEnumerable<Rule>> AddRulesAsync(IEnumerable<Rule> rules)
         {
             await _context.Rules.AddRangeAsync(rules);
             await _context.SaveChangesAsync();
+            return rules;
         }
 
         public async Task DeleteAsync(Rule rule)

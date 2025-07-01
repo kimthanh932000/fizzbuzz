@@ -16,9 +16,9 @@ namespace Backend.Services
             return result;
         }
 
-        public async Task AddRulesAsync(List<Rule> rules)
+        public async Task<IEnumerable<Rule>> AddRulesAsync(List<Rule> rules)
         {
-            await _ruleRepo.AddRulesAsync(rules);
+            return await _ruleRepo.AddRulesAsync(rules);
         }
 
         public async Task DeleteAsync(int id)

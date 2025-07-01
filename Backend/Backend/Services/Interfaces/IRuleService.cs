@@ -7,6 +7,6 @@
         Task<Rule> AddAsync(Rule rule);
         Task UpdateAsync(Rule rule);
         Task DeleteAsync(int id);
-        Task AddRulesAsync(List<Rule> rules);
+        Task<IEnumerable<Rule>> AddRulesAsync(List<Rule> rules);
     }
 }
