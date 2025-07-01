@@ -21,45 +21,44 @@ namespace Backend.Services
             _gameSessionNumberService = gameSessionNumberService;
         }
 
+        private async Task ExpireSessionIfNecessaryAsync(GameSession session, bool throwIfExpired = false)
+        {
+            if (!session.IsExpired)
+            {
+                session.IsExpired = IsSessionExpired(session.StartTime, session.Game.DurationInSeconds);
+                await _gameSessionRepo.UpdateAsync(session);
+            }
+
+            if (throwIfExpired && session.IsExpired)
+            {
+                throw new SessionExpiredException();
+            }
+        }
+
         public bool IsSessionExpired(DateTime startTime, int remainingTimeInSeconds)
         {
             // Calculate remaining seconds
-            remainingTimeInSeconds = TimeHelper.GetReminingTimeInSeconds(startTime, remainingTimeInSeconds);
-            return remainingTimeInSeconds == 0;
+            return TimeHelper.GetReminingTimeInSeconds(startTime, remainingTimeInSeconds) == 0;
+        }
+
+        private async Task<GameSession> GetSessionOrThrowAsync(int sessionId)
+        {
+            return await _gameSessionRepo.GetByIdAsync(sessionId)
+                   ?? throw new KeyNotFoundException("Session not found.");
         }
 
         public async Task<GameSession?> GetByIdAsync(int id)
         {
-            var session = await _gameSessionRepo.GetByIdAsync(id);
-            if (session == null)
-            {
-                throw new KeyNotFoundException("Session not found.");
-            }          
-
-            // Expire session if time is up
-            session.IsExpired = IsSessionExpired(session.StartTime, session.Game.DurationInSeconds);
-
-            await _gameSessionRepo.UpdateAsync(session);
-
+            var session = await GetSessionOrThrowAsync(id);
+            await ExpireSessionIfNecessaryAsync(session, throwIfExpired: true);
             return session;
         }
 
         public async Task ValidateAnswerAsync(int sessionId, int number, string answer)
         {
-            var session = await _gameSessionRepo.GetByIdAsync(sessionId);
+            var session = await GetSessionOrThrowAsync(sessionId);
 
-            if (session == null)
-            {
-                throw new KeyNotFoundException("Session not found.");
-            }
-
-            // Expire session if time is up
-            session.IsExpired = IsSessionExpired(session.StartTime, session.Game.DurationInSeconds);
-
-            if (session.IsExpired)
-            {
-                throw new SessionExpiredException();
-            }
+            await ExpireSessionIfNecessaryAsync(session, throwIfExpired: true);
 
             string correctAnswer = "";
 
@@ -116,18 +115,9 @@ namespace Backend.Services
 
         public async Task<int> GetRandomNumber(int sessionId)
         {
-            var session = await _gameSessionRepo.GetByIdAsync(sessionId);
-            if (session == null)
-            {
-                throw new KeyNotFoundException("Session not found.");
-            }
+            var session = await GetSessionOrThrowAsync(sessionId);
 
-            // Expire session if time is up
-            session.IsExpired = IsSessionExpired(session.StartTime, session.Game.DurationInSeconds);
-            if (session.IsExpired)
-            {
-                throw new SessionExpiredException();
-            }
+            await ExpireSessionIfNecessaryAsync(session, throwIfExpired: true);
 
             var usedNumbers = await _gameSessionNumberService.GetUsedNumbersBySessionIdAsync(sessionId);
             if (usedNumbers.ToList().Count >= session.Game.Range)
