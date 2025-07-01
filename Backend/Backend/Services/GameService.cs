@@ -11,7 +11,7 @@
             _ruleService = ruleService;
         }
 
-        public async Task<RequestGameDto> AddAsync(CreateGameDto createGameDto)
+        public async Task<Game> AddAsync(CreateGameDto createGameDto)
         {
             var existedGameName = await _gameRepo.IsGameNameExistedAsync(createGameDto.Name);
             if (existedGameName)
@@ -19,7 +19,7 @@
                 throw new FieldValidateException("Name", "Game name already exists.");
             }
 
-            var game = new Game
+            var newGame = new Game
             {
                 Name = createGameDto.Name,
                 AuthorName = createGameDto.AuthorName,
@@ -29,37 +29,22 @@
             };
 
             // Save to get GameId
-            var result = await _gameRepo.AddAsync(game);
+            var result = await _gameRepo.AddAsync(newGame);
 
             // Assign Rules with GameId
-            game.Rules = createGameDto.Rules.Select(r => new Rule
+            newGame.Rules = createGameDto.Rules.Select(r => new Rule
             {
                 DivisibleBy = r.DivisibleBy,
                 Word = r.Word,
-                GameId = game.Id
+                GameId = result.Id
             }).ToList();
 
-            var rulesEntity = await _ruleService.AddRulesAsync(game.Rules);
+            var rulesEntity = await _ruleService.AddRulesAsync(newGame.Rules);
 
             // Populate Rules into result before returning
             result.Rules = rulesEntity.ToList();
 
-            var gameDto = new RequestGameDto
-            {
-                Id = result.Id,
-                Name = result.Name,
-                AuthorName = result.AuthorName, 
-                Range = result.Range,
-                DurationInSeconds = result.DurationInSeconds,
-                Rules = result.Rules.Select(r => new RequestRuleDto
-                {
-                    Id = r.Id,
-                    DivisibleBy = r.DivisibleBy,
-                    Word = r.Word
-                }).ToList()
-            };
-
-            return gameDto;
+            return result;
         }
 
         public async Task DeleteAsync(int id)

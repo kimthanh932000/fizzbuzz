@@ -23,6 +23,16 @@
             };
         }
 
+        public static RequestRuleDto ToRequestRuleDto(this Rule rule)
+        {
+            return new RequestRuleDto()
+            {
+                Id = rule.Id,
+                DivisibleBy = rule.DivisibleBy,
+                Word = rule.Word
+            };
+        }
+
         public static RequestGameDto ToRequestGameDto(this Game game)
         {
             return new RequestGameDto()
@@ -32,6 +42,7 @@
                 AuthorName = game.AuthorName,
                 Range = game.Range,
                 DurationInSeconds = game.DurationInSeconds,
+                Rules = game.Rules.Select(r => r.ToRequestRuleDto()).ToList()
             };
         }
 
