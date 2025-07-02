@@ -4,3 +4,4 @@
 .vs/fizzbuzz/v17/.wsuo
 .vs/fizzbuzz/v17/DocumentLayout.json
 frontend/package-lock.json
+frontend/.env.development
