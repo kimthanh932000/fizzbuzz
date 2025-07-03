@@ -7,4 +7,25 @@ const axiosInstance = axios.create({
   }
 });
 
-export default axiosInstance;
+const get = async <T>(url: string): Promise<T> => {
+  const res = await axiosInstance.get<T>(url);
+  return res.data;
+}
+
+const post = async <T, P = void>(url: string, payload?: P): Promise<T> => {
+  const res = await axiosInstance.post<T>(url, payload);
+  return res.data;
+}
+
+// axiosInstance.interceptors.request.use(
+//   (config) => {
+//     // Add any request interceptors here if needed
+//     return config;
+//   },
+//   (error) => {
+//     // Handle request errors
+//     return Promise.reject(error);
+//   }
+// );
+
+export {axiosInstance, get, post};
