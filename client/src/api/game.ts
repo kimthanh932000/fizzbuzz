@@ -9,7 +9,7 @@ import { get, post } from "./axiosInstance";
 
 export const createGame = (game: GameDto): Promise<Game> => post<Game, GameDto>("/games", game);
 
-export const fetchGames = (): Promise<Game[]> => get<Game[]>("/games");
+export const fetchGames = (): Promise<{data: Game[]; message: string}> => get<{ data: Game[]; message: string }>("/games");
 
 export const startGame = async (gameId: number): Promise<SessionDto> => post<SessionDto>(`/games/start/${gameId}`);
 
