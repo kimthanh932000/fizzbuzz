@@ -25,6 +25,12 @@ namespace Backend
             builder.Services.AddScoped<IGameSessionService, GameSessionService>();
             builder.Services.AddScoped<IGameSessionNumberService, GameSessionNumberService>();
 
+            // Disable automatic model state validation
+            builder.Services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
+
             // CORS config
             builder.Services.AddCors(options =>
             {
