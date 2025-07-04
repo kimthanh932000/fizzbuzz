@@ -5,3 +5,4 @@ export * from './RequestSessionDto';
 export * from './Rule';
 export * from './RuleDto';
 export * from './ScoreDto';
+export * from './CreateGameError';
