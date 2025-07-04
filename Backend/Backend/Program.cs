@@ -25,6 +25,18 @@ namespace Backend
             builder.Services.AddScoped<IGameSessionService, GameSessionService>();
             builder.Services.AddScoped<IGameSessionNumberService, GameSessionNumberService>();
 
+            // CORS config
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", builder =>
+                {
+                    builder
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowAnyOrigin();
+                });
+            });
+
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -40,6 +52,9 @@ namespace Backend
             }
 
             app.UseHttpsRedirection();
+
+            // Apply the CORS policy
+            app.UseCors("AllowAll");
 
             app.UseAuthorization();
 
