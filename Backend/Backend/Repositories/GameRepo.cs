@@ -24,7 +24,7 @@
 
         public async Task<IEnumerable<Game?>> GetAllAsync()
         {
-            return await _context.Games.Include(g => g.Rules).ToListAsync();
+            return await _context.Games.Include(g => g.Rules).OrderByDescending(g => g.Id).ToListAsync();
         }
 
         public async Task<Game?> GetByIdAsync(int id)
