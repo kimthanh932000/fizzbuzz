@@ -6,3 +6,4 @@
 frontend/package-lock.json
 frontend/.env.development
 client/package-lock.json
+client/.env.development

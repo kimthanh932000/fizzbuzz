@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchGames, startGame } from '../api/game';
-import type { Game, SessionDto } from '../types';
+import { fetchGames } from '../api/game';
+import type { Game } from '../types';
 
 const GameListPage: React.FC = () => {
   const [games, setGames] = useState<Game[]>([]);
@@ -16,23 +16,20 @@ const GameListPage: React.FC = () => {
   const getAllGames = async () => {
     try {
       const res = await fetchGames();
+      if (res.data.length === 0) {
+        setError('No games available.');
+        return;
+      }
       setGames(res.data);
     } catch (err) {
-      console.error('Error fetching games:', err);
       setError('Failed to fetch games.');
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleStart = async (gameId: number) => {
-    try {
-      setLoading(true);
-      const data: SessionDto = await startGame(gameId);
-      navigate(`/session/${data.id}`);
-    } catch (err) {
-      setError('Failed to start game.');
-    } finally {
-      setLoading(false);
-    }
+    navigate(`/games/${gameId}/rules`);
   };
 
   return (
@@ -61,19 +58,6 @@ const GameListPage: React.FC = () => {
                 <span className="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
                   Duration: {game.durationInSeconds} seconds
                 </span>
-              </div>
-              <div className="mt-3">
-                <h3 className="font-semibold text-gray-700 mb-1">Rules:</h3>
-                <ul className="list-disc pl-6 text-sm text-gray-700 space-y-1">
-                  {game.rules.map((rule, index) => (
-                    <li key={index}>
-                      <span className="font-medium text-blue-600">
-                        Replace numbers divisible by {rule.divisibleBy}
-                      </span>{" "}
-                      with <span className="italic text-pink-600">"{rule.word}"</span>
-                    </li>
-                  ))}
-                </ul>
               </div>
               <button
                 onClick={() => handleStart(game.id)}
