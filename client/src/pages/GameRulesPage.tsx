@@ -16,7 +16,7 @@ const GameRulesPage = () => {
         }
     }, [gameId]);
 
-    const getGameById = async (id: number) => {
+    const getGameById = async (id: number): Promise<void> => {
         try {
             const res = await fetchGameById(id);
             if (res.data) {
@@ -29,14 +29,14 @@ const GameRulesPage = () => {
         }
     }
 
-    const handlePlay = async (id: number) => {
+    const handlePlay = async (id: number): Promise<void> => {
         try {
             setLoading(true);
             const res = await startGame(id);
             if (res.data) {
                 navigate(`/games/session/${res.data.id}`);
             }
-        } catch {
+        } catch(err) {
             setError('Failed to start game.');
         } finally {
             setLoading(false);
@@ -67,7 +67,7 @@ const GameRulesPage = () => {
                 Back
             </button>
             <button
-                onClick={(gameId) => handlePlay}
+                onClick={() => handlePlay(game.id)}
                 disabled={loading}
                 className="mt-4 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
             >
