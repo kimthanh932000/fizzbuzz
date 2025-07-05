@@ -27,7 +27,8 @@ namespace Backend.Services
         {
             if (!session.IsExpired)
             {
-                session.IsExpired = IsSessionExpired(session.StartTime, session.Game.DurationInSeconds);
+                session.RemainingSeconds = TimeHelper.GetReminingTimeInSeconds(session.StartTime, session.Game.DurationInSeconds);
+                session.IsExpired = session.RemainingSeconds == 0;
                 await _gameSessionRepo.UpdateAsync(session);
             }
 
