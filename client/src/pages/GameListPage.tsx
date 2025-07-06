@@ -34,7 +34,16 @@ const GameListPage: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto mt-8 px-4">
-      <h1 className="text-3xl font-bold mb-6">Available Games</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Available Games</h1>
+        <button
+          onClick={() => navigate("/games/create")}
+          className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow transition-colors duration-150"
+        >
+          + Create New Game
+        </button>
+      </div>
+      {/* <h1 className="text-3xl font-bold mb-6">Available Games</h1> */}
 
       {error && <div className="text-red-500 mb-4">{error}</div>}
 
