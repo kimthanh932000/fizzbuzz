@@ -165,7 +165,12 @@
                 if (ex is InvalidOperationException invalidEx)
                 {
                     return NotFound(ApiResponse<object>.FailedResponse(
-                                   new Dictionary<string, string[]> { { "SessionId", new[] { invalidEx.Message } } }));
+                                   new Dictionary<string, string[]> { { "Session", new[] { invalidEx.Message } } }));
+                }
+                if (ex is SessionExpiredException expiredEx)
+                {
+                    return StatusCode(410, ApiResponse<object>.FailedResponse(
+                                   new Dictionary<string, string[]> { { "Session", new[] { expiredEx.Message } } }));
                 }
                 return BadRequest(ApiResponse<object>.FailedResponse(
                                    new Dictionary<string, string[]> { { "Server", new[] { ex.Message } } }));
