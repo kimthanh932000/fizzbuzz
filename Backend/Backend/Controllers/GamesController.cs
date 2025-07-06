@@ -25,11 +25,10 @@
             }
             catch (Exception ex)
             {
-                var generalErrors = new Dictionary<string, string[]>
+                return StatusCode(500, ApiResponse<object>.FailedResponse(new Dictionary<string, string[]>
                 {
                     { "Server", new[] { ex.Message } }
-                };
-                return BadRequest(ApiResponse<object>.FailedResponse(generalErrors));
+                }));
             }
         }
 
@@ -49,8 +48,10 @@
                     return NotFound(ApiResponse<object>.FailedResponse(
                                    new Dictionary<string, string[]> { { "GameId", new[] { keyNotFoundEx.Message } } }));
                 }
-                return BadRequest(ApiResponse<object>.FailedResponse(
-                                   new Dictionary<string, string[]> { { "Server", new[] { ex.Message } } }));
+                return StatusCode(500, ApiResponse<object>.FailedResponse(new Dictionary<string, string[]>
+                {
+                    { "Server", new[] { ex.Message } }
+                }));
             }
         }
 
@@ -87,48 +88,7 @@
                 return StatusCode(500, ApiResponse<object>.FailedResponse(
                                    new Dictionary<string, string[]> { { "Server", new[] { ex.Message } } }));
             }
-        }
-
-        // PUT: api/[controller]/{id}
-        [HttpPut("{id}")]
-        public async Task<ActionResult<Game>> UpdateAsync(int id, [FromBody] Game entity)
-        {
-            if (id != entity.Id)
-            {
-                return BadRequest();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return ValidationProblem(ModelState);
-            }
-
-            try
-            {
-                await _gameService.UpdateAsync(entity);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex);
-            }
-
-            return Ok(entity);
-        }
-
-        // DELETE: api/[controller]/{id}
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteAsync(int id)
-        {
-            try
-            {
-                await _gameService.DeleteAsync(id);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex);
-            }
-            return Ok();
-        }
+        }  
 
         // POST: api/[controller]/start/{gameId}
         [HttpPost("start/{gameId}")]
@@ -146,8 +106,10 @@
                     return NotFound(ApiResponse<object>.FailedResponse(
                                    new Dictionary<string, string[]> { { "GameId", new[] { keyNotFoundEx.Message } } }));
                 }
-                return BadRequest(ApiResponse<object>.FailedResponse(
-                                   new Dictionary<string, string[]> { { "Server", new[] { ex.Message } } }));
+                return StatusCode(500, ApiResponse<object>.FailedResponse(new Dictionary<string, string[]>
+                {
+                    { "Server", new[] { ex.Message } }
+                }));
             }
         }
 
@@ -172,8 +134,10 @@
                     return StatusCode(410, ApiResponse<object>.FailedResponse(
                                    new Dictionary<string, string[]> { { "Session", new[] { expiredEx.Message } } }));
                 }
-                return BadRequest(ApiResponse<object>.FailedResponse(
-                                   new Dictionary<string, string[]> { { "Server", new[] { ex.Message } } }));
+                return StatusCode(500, ApiResponse<object>.FailedResponse(new Dictionary<string, string[]>
+                {
+                    { "Server", new[] { ex.Message } }
+                }));
             }
         }
 
@@ -248,8 +212,10 @@
                     return NotFound(ApiResponse<object>.FailedResponse(
                                    new Dictionary<string, string[]> { { "SessionId", new[] { keyNotFoundEx.Message } } }));
                 }
-                return BadRequest(ApiResponse<object>.FailedResponse(
-                                   new Dictionary<string, string[]> { { "Server", new[] { ex.Message } } }));
+                return StatusCode(500, ApiResponse<object>.FailedResponse(new Dictionary<string, string[]>
+                {
+                    { "Server", new[] { ex.Message } }
+                }));
             }
         }
     }
