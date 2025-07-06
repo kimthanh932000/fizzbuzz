@@ -17,15 +17,4 @@ const post = async <T, P = void>(url: string, payload?: P): Promise<T> => {
   return res.data;
 }
 
-// axiosInstance.interceptors.request.use(
-//   (config) => {
-//     // Add any request interceptors here if needed
-//     return config;
-//   },
-//   (error) => {
-//     // Handle request errors
-//     return Promise.reject(error);
-//   }
-// );
-
 export {axiosInstance, get, post};

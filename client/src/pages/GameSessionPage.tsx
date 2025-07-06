@@ -73,7 +73,7 @@ const GameSessionPage = () => {
   };
 
   if (error) return <div className="text-center text-red-500 mt-10">{error}</div>;
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="text-center mt-10">Loading...</div>;
 
   return (
     <div className="max-w-xl mx-auto mt-10 px-4">
@@ -88,9 +88,14 @@ const GameSessionPage = () => {
           <input
             id="answer"
             type="text"
+            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded"
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
-            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSubmit();
+              }
+            }}
           />
         </div>
 

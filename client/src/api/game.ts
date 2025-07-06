@@ -24,5 +24,5 @@ export const getSession = async (sessionId: number): Promise<{ data: SessionDto;
 export const moveToNextRound = async (sessionId: number, answer: AnswerDto): Promise<{ data: number, message: string }> =>
   post<{ data: number, message: string }, AnswerDto>(`/games/session/${sessionId}/next-round`, answer);
 
-export const getScore = async (sessionId: number): Promise<ScoreDto> =>
-  get<ScoreDto>(`/games/session/${sessionId}/score`);
+export const getScore = async (sessionId: number): Promise<{ data: ScoreDto; message: string }> =>
+  get<{ data: ScoreDto; message: string }>(`/games/session/${sessionId}/score`);
