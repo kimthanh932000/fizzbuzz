@@ -132,7 +132,9 @@ namespace Backend.Services
             var usedNumbers = await _gameSessionNumberService.GetUsedNumbersBySessionIdAsync(sessionId);
             if (usedNumbers.ToList().Count >= session.Game.Range)
             {
-                throw new InvalidOperationException("All possible numbers have been used for this session.");
+                session.IsExpired = true;
+                await _gameSessionRepo.UpdateAsync(session);
+                throw new InvalidOperationException("All possible numbers have been used.");
             }
 
             int randNumber;
