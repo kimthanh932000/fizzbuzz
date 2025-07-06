@@ -1,5 +1,6 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 import { moveToNextRound, getSession } from "../api/game";
 import type { AnswerDto, SessionDto } from "../types";
 import Timer from "../components/Timer";
@@ -29,7 +30,17 @@ const GameSessionPage = () => {
         setCurrentNumber(res.data.currentNumber);
       }
     } catch (err) {
-      setError("Failed to start game.");
+      if (axios.isAxiosError(err)) {
+        if (err.response?.status === 410) {
+          setError(`${err.response.data?.errors.Session[0]} Redirecting to score page in 3 seconds.`);
+          setTimeout(() => {
+            navigate(`/games/session/${sessionId}/score`);
+          }, 3000);
+        }
+        else {
+          setError("Failed to fetch session.");
+        }
+      }
     } finally {
       setLoading(false);
     }
@@ -37,18 +48,25 @@ const GameSessionPage = () => {
 
   const handleSubmit = async () => {
     try {
-      // if (!sessionId || !answer.trim()) return;
-
       const payload: AnswerDto = {
         number: currentNumber,
         value: answer.trim(),
       };
-
       const res = await moveToNextRound(Number(sessionId), payload);
       setCurrentNumber(res.data);
       setAnswer("");
     } catch (err) {
-      setError("Failed to submit answer.");
+      if (axios.isAxiosError(err)) {
+        if (err.response?.status === 409) {
+          setError(`${err.response.data?.errors.Number[0]} Redirecting to score page in 3 seconds.`);
+          setTimeout(() => {
+            navigate(`/games/session/${sessionId}/score`);
+          }, 3000);
+        }
+        else {
+          setError("Failed to submit answer.");
+        }
+      }
     } finally {
       setLoading(false);
     }
@@ -84,10 +102,11 @@ const GameSessionPage = () => {
         </button>
 
         <div className="mt-4 text-sm text-gray-500">
-          Remaining time: 
-          <Timer
-            seconds={session.remainingSeconds}
-            onExpire={() => navigate(`/games/session/${sessionId}/score`)} />
+          Remaining time:
+          {session?.remainingSeconds &&
+            <Timer
+              seconds={session.remainingSeconds}
+              onExpire={() => navigate(`/games/session/${sessionId}/score`)} />}
         </div>
       </div>
     </div>
