@@ -159,8 +159,7 @@ namespace Backend.Services
         public async Task<GameScoreDto> GetScoreBySessionIdAsync(int sessionId)
         {
             var session = await GetSessionOrThrowAsync(sessionId);
-
-            GameScoreDto result = new GameScoreDto();
+            await ExpireSessionIfNecessaryAsync(session);
 
             if (!session.IsExpired)
             {
