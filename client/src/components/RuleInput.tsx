@@ -29,7 +29,6 @@ const RuleInput: React.FC<RuleInputProps> = ({ rule, onChange, onRemove, isRemov
                     onChange={handleDivisibleChange}
                     className="w-full border px-3 py-2 rounded"
                     placeholder='e.g., 3'
-                    min={1}
                 />
                 {error?.divisibleBy && <span className="text-red-500 text-sm">{error.divisibleBy}</span>}
             </div>

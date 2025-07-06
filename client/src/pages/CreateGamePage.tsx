@@ -9,8 +9,8 @@ const CreateGamePage = () => {
   const [game, setGame] = useState<GameDto>({
     name: '',
     authorName: '',
-    range: 1,
-    durationInSeconds: 1,
+    range: 0,
+    durationInSeconds: 0,
     rules: [{ divisibleBy: 0, word: '' }],
   });
 
@@ -119,7 +119,7 @@ const CreateGamePage = () => {
             value={game.range}
             onChange={(e) => updateField('range', Number(e.target.value))}
             className="w-full border px-3 py-2 rounded"
-            min={1}
+            min={0}
           />
           {error.range && <p className="text-red-500 text-sm">{error.range}</p>}
         </div>
@@ -131,7 +131,7 @@ const CreateGamePage = () => {
             value={game.durationInSeconds}
             onChange={(e) => updateField('durationInSeconds', Number(e.target.value))}
             className="w-full border px-3 py-2 rounded"
-            min={1}
+            min={0}
           />
           {error.durationInSeconds && (
             <p className="text-red-500 text-sm">{error.durationInSeconds}</p>
@@ -163,6 +163,12 @@ const CreateGamePage = () => {
           {loading ? 'Creating...' : 'Create Game'}
         </button>
       </form>
+      <button
+        className="mt-3 w-full py-2 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded disabled:opacity-50"
+        onClick={() => navigate('/')}
+      >
+        Cancel
+      </button>
     </div>
   );
 };
