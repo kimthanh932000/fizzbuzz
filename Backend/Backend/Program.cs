@@ -50,12 +50,19 @@ namespace Backend
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+            // Run migrations on startup
+            using (var scope = app.Services.CreateScope())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                db.Database.Migrate(); // Automatically applies migrations or creates DB
             }
+
+            //Configure the HTTP request pipeline.
+            //if (app.Environment.IsDevelopment())
+            //{
+            app.UseSwagger();
+                app.UseSwaggerUI();
+            //}
 
             app.UseHttpsRedirection();
 

@@ -8,12 +8,14 @@ services:
 
   be:
     build:
-      context: ./Backend/Backend
+      context: ./Backend
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
     depends_on:
       - db
+    environment:
+        - ConnectionStrings__DefaultConnection=Server=db;Database=fizzbuzz;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;
 
   db:
     image: mcr.microsoft.com/mssql/server:2022-latest
